@@ -94,13 +94,24 @@ class Request implements JsonSerializable
             $response = $e->getResponse();
             $json = json_decode($response->getBody(),true);
 
-
+            echo $response->getBody();
             if($json && isset($json['error']['details'])){
+
+                $error = $e;
                 foreach($json['error']['details'] AS $d){
-                    if( $d['@type']==='type.googleapis.com/google.firebase.fcm.v1.FcmError'){
-                        throw new FcmError($d['errorCode'],$e);
+
+                    switch($d['@type']){
+                        case 'type.googleapis.com/google.firebase.fcm.v1.FcmError':
+                            $error = new FcmError($d['errorCode'],$e->getCode(),$error);
+                            break;
+                        case 'type.googleapis.com/google.rpc.BadRequest':
+                            $error = new BadRequest($d['fieldViolations'],$e->getCode(),$error);
+                            break;
+                        default:
                     }
                 }
+                throw $error;
+
             }
 
             throw $e;

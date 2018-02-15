@@ -24,8 +24,8 @@ class FcmError extends Error
     private
         $error_code;
 
-    function __construct($error_code,\Throwable $t=null){
-        parent::__construct($error_code,$t?$t->getCode():0,$t);
+    function __construct($error_code,$code=0,\Throwable $t=null){
+        parent::__construct($error_code,$code,$t);
         $this->error_code = $error_code;
     }
 
