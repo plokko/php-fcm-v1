@@ -1,13 +1,13 @@
 <?php
-namespace Plokko\phpFCM\Message;
-
+namespace Plokko\PhpFcmV1\Message;
 
 use ArrayAccess;
 use JsonSerializable;
 
 class Data implements ArrayAccess,JsonSerializable
 {
-    private $data=[];
+    private
+        $data=[];
 
     function __construct($data=[]){
         $this->data = $data;
@@ -17,16 +17,30 @@ class Data implements ArrayAccess,JsonSerializable
         return $this->data[$k];
     }
 
+    /**
+     * @param $k
+     * @param $v
+     * @return $this
+     */
     function set($k,$v){
         $this->data[$k]=$v;
         return $this;
     }
+
+
 
     function fill(array $data){
         $this->data=$data;
     }
     function clear(){
         $this->data=[];
+    }
+
+    function __set($k,$v){
+        $this->set($k,$v);
+    }
+    function __get($k){
+        return $this->get($k);
     }
 
     public function offsetExists($offset)
@@ -52,6 +66,7 @@ class Data implements ArrayAccess,JsonSerializable
 
     public function jsonSerialize()
     {
-        return $this->data;
+        // Force a string : string array
+        return array_map(function($v){return ''.$v;},$this->data);
     }
 }

@@ -1,11 +1,11 @@
 <?php
-namespace Plokko\phpFCM\Message;
+namespace Plokko\PhpFcmV1\Message;
 
 use JsonSerializable;
 
 /**
  * Class AndroidNotification
- * @package Plokko\phpFCM\Message
+ * @package Plokko\PhpFcmV1\Message
  * @see https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#AndroidNotification
  */
 class AndroidNotification implements JsonSerializable
@@ -33,6 +33,9 @@ class AndroidNotification implements JsonSerializable
         $title_loc_key,
         /**@var array**/
         $title_loc_args;
+
+    function __get($k){return $this->{$k};}
+    function __set($k,$v){$this->{$k}=$v;}
 
     public function jsonSerialize()
     {

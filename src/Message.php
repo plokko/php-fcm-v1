@@ -1,17 +1,17 @@
 <?php
-namespace Plokko\PhpFCM;
+namespace Plokko\PhpFcmV1;
 
 use JsonSerializable;
-use Plokko\phpFCM\Message\AndroidConfig;
-use Plokko\phpFCM\Message\ApnsConfig;
-use Plokko\phpFCM\Message\Data;
-use Plokko\phpFCM\Message\Notification;
-use Plokko\phpFCM\Message\WebpushConfig;
-use Plokko\PhpFCM\Targets\Target;
+use Plokko\PhpFcmV1\Message\AndroidConfig;
+use Plokko\PhpFcmV1\Message\ApnsConfig;
+use Plokko\PhpFcmV1\Message\Data;
+use Plokko\PhpFcmV1\Message\Notification;
+use Plokko\PhpFcmV1\Message\WebpushConfig;
+use Plokko\PhpFcmV1\Targets\Target;
 
 /**
  * Class Message
- * @package Plokko\PhpFCM
+ * @package Plokko\PhpFcmV1
  * @see https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages
  *
  * @property Data $data Arbitrary key/value payload.
@@ -23,19 +23,19 @@ use Plokko\PhpFCM\Targets\Target;
  */
 class Message implements JsonSerializable {
     private
-        /**@var \Plokko\phpFCM\Message\Data **/
+        /**@var \Plokko\PhpFcmV1\Message\Data **/
         $data,
-        /**@var \Plokko\phpFCM\Message\Notification **/
+        /**@var \Plokko\PhpFcmV1\Message\Notification **/
         $notification,
-        /**@var \Plokko\phpFCM\Message\AndroidConfig **/
+        /**@var \Plokko\PhpFcmV1\Message\AndroidConfig **/
         $android,
-        /**@var \Plokko\phpFCM\Message\WebpushConfig **/
+        /**@var \Plokko\PhpFcmV1\Message\WebpushConfig **/
         $webpush,
-        /**@var \Plokko\phpFCM\Message\ApnsConfig **/
+        /**@var \Plokko\PhpFcmV1\Message\ApnsConfig **/
         $apns,
 
-        $targetType=null,
-        $target=null;
+        /**@var \Plokko\PhpFcmV1\Targets\Target **/
+        $target;
 
     function __construct()
     {
@@ -75,6 +75,9 @@ class Message implements JsonSerializable {
 
     public function jsonSerialize()
     {
+        if(!$this->target){
+            throw new \Exception('FCMMEssage target not specified!','TARGET_NOT_SPECIFIED');
+        }
 
         $data = array_filter([
             'data'          => $this->data,
@@ -82,10 +85,9 @@ class Message implements JsonSerializable {
             'android'       => $this->android,
             'webpush'       => $this->webpush,
             'apns'          => $this->apns,
-            $this->targetType => $this->target,
         ]);
 
-        return $data;
+        return array_merge($data,$this->target->jsonSerialize());
     }
 
 

@@ -1,5 +1,5 @@
 <?php
-namespace Plokko\phpFCM\Message;
+namespace Plokko\PhpFcmV1\Message;
 
 
 class ApnsConfig

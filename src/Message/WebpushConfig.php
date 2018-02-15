@@ -1,11 +1,11 @@
 <?php
-namespace Plokko\phpFCM\Message;
+namespace Plokko\PhpFcmV1\Message;
 
 use JsonSerializable;
 
 /**
  * Class WebpushConfig
- * @package Plokko\phpFCM\Message
+ * @package Plokko\PhpFcmV1\Message
  * @see
  */
 class WebpushConfig implements JsonSerializable

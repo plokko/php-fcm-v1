@@ -1,11 +1,11 @@
 <?php
-namespace Plokko\phpFCM\Message;
+namespace Plokko\PhpFcmV1\Message;
 
 use JsonSerializable;
 
 /**
  * Class AndroidConfig
- * @package Plokko\phpFCM\Message
+ * @package Plokko\PhpFcmV1\Message
  * @see https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#AndroidConfig
  */
 class AndroidConfig implements JsonSerializable

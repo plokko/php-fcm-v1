@@ -1,5 +1,5 @@
 <?php
-namespace Plokko\phpFCM;
+namespace Plokko\PhpFcmV1;
 
 
 use GuzzleHttp\Client;

@@ -1,10 +1,10 @@
 <?php
-namespace Plokko\phpFCM;
+namespace Plokko\PhpFcmV1;
 use Exception;
 
 /**
  * Class FcmError
- * @package Plokko\phpFCM
+ * @package Plokko\PhpFcmV1
  * @see https://firebase.google.com/docs/reference/fcm/rest/v1/FcmError
  */
 class FcmError extends Exception
