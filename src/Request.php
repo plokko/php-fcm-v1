@@ -4,21 +4,29 @@ namespace Plokko\phpFCM;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
-use Plokko\PhpFCM\Targets\Target;
+use JsonSerializable;
 
-class Request
+class Request implements JsonSerializable
 {
     private
-        $apiUrl = 'https://fcm.googleapis.com/v1/{parent}/messages:send',
+        /**@var string OAUTH 2 Google access token
+        $accessToken,
         /**@var ClientInterface **/
         $client;
+
     public
         /**@var boolean Flag for testing the request without actually delivering the message. **/
         $validate_only = false;
 
-    function __construct($parent)
+    /**
+     * Request constructor.
+     * @param $project_id string Required. Firebase project id
+     * @param $accessToken string OAuth 2 access token
+     */
+    function __construct($message)
     {
-        $this->apiUrl = str_replace(['{parent}'],[$parent],$this->apiUrl);
+        $this->apiUrl = str_replace(['{parent}'],['projects/'.$project_id],$this->apiUrl);
+        $this->accessToken = $accessToken;
         $this->client = new Client();
     }
 
@@ -30,16 +38,11 @@ class Request
         $this->validate_only=$validate;
     }
 
-    private function getBody(Message $message,Target $target){
-        $message = array_merge($message->jsonSerialize(),$target->jsonSerialize());
+    public function jsonSerialize()
+    {
         return [
             'validate_only' => $this->validate_only,
             'message'       => $message,
         ];
-    }
-
-    function send(Message $message,Target $target){
-        $body = $this->getBody($message,$target);
-
     }
 }

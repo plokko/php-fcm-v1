@@ -14,7 +14,6 @@ use Plokko\PhpFCM\Targets\Target;
  * @package Plokko\PhpFCM
  * @see https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages
  *
- * @property string $name Output Only. The identifier of the message sent, in the format of projects/*\/messages/{message_id}.
  * @property Data $data Arbitrary key/value payload.
  * @property Notification $notification Basic notification template to use across all platforms.
  * @property AndroidConfig $android Android specific options for messages sent through FCM connection server.
@@ -24,8 +23,6 @@ use Plokko\PhpFCM\Targets\Target;
  */
 class Message implements JsonSerializable {
     private
-        /**@var string**/
-        $name,
         /**@var \Plokko\phpFCM\Message\Data **/
         $data,
         /**@var \Plokko\phpFCM\Message\Notification **/
@@ -80,7 +77,6 @@ class Message implements JsonSerializable {
     {
 
         $data = array_filter([
-            'name'          => $this->name,
             'data'          => $this->data,
             'notification'  => $this->notification,
             'android'       => $this->android,

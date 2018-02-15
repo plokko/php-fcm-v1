@@ -16,6 +16,12 @@ class Notification implements JsonSerializable
         /**@var string The notification's body text.*/
         $body;
 
+    function __construct($title='',$body='')
+    {
+        $this->title = $title;
+        $this->body = $body;
+    }
+
 
     function setTitle($title){
         $this->title = $title;
