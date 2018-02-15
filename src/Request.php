@@ -89,9 +89,7 @@ class Request implements JsonSerializable
                     }
                 }
             }
-            print_r($json);
-            die();
-            //echo "ERROR:\n REQUEST BODY:\n".($request->getBody())."\n\n"," Response body : \n",$response->getBody();
+
             throw $e;
         }
     }
