@@ -24,6 +24,8 @@ use UnexpectedValueException;
  */
 class Message implements JsonSerializable {
     private
+        /**@var string**/
+        $name,
         /**@var \Plokko\PhpFcmV1\Message\Data **/
         $data,
         /**@var \Plokko\PhpFcmV1\Message\Notification **/
@@ -74,8 +76,7 @@ class Message implements JsonSerializable {
     }
 
 
-    public function jsonSerialize()
-    {
+    function getPayload(){
         if(!$this->target){
             throw new UnexpectedValueException('FCMMEssage target not specified!','TARGET_NOT_SPECIFIED');
         }
@@ -87,11 +88,55 @@ class Message implements JsonSerializable {
             'webpush'       => $this->webpush,
             'apns'          => $this->apns,
         ]);
-
         return array_merge($data,$this->target->jsonSerialize());
     }
 
+    /**
+     * Submit the message
+     * @param Request $request
+     * @throws FcmError
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function send(Request $request){
+        $name = $request->submit($this);
+        if(!$request->validate_only)
+            $this->name = $name;
+    }
 
+    /**
+     * Validate the message with Firebase without submitting it
+     * @param Request $request
+     * @return bool
+     * @throw FcmError
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function validate(Request $request){
+        $request = clone $request;
+        $request->validate_only=true;
 
+        $request->submit($this);
 
+        return true;
+    }
+
+    public function jsonSerialize()
+    {
+        $data = array_filter([
+            'name'          => $this->name,
+            'data'          => $this->data,
+            'notification'  => $this->notification,
+            'android'       => $this->android,
+            'webpush'       => $this->webpush,
+            'apns'          => $this->apns,
+        ]);
+
+        return $this->target?array_merge($data,$this->target->jsonSerialize()):$data;
+    }
+
+    function __toString()
+    {
+        return json_encode($this);
+    }
+
+    function isSubmitted(){return !!$this->name;}
 }

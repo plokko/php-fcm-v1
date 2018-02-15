@@ -13,8 +13,8 @@ use JsonSerializable;
 class Request implements JsonSerializable
 {
     private
-        /**@var string OAUTH 2 Google access token
-        $accessToken,
+        /**@var ServiceAccount**/
+        $serviceAccount,
         /**@var ClientInterface|null **/
         $client;
 
@@ -24,13 +24,12 @@ class Request implements JsonSerializable
 
     /**
      * Request constructor.
-     * @param Message $message Message to be sent
      * @param bool $validate_only Flag for testing the request without actually delivering the message.
      */
-    function __construct(Message $message,$validate_only=false,ClientInterface $client=null)
+    function __construct(ServiceAccount $account,$validate_only=false,ClientInterface $client=null)
     {
-        $this->message = $message;
-        $this->validate_only=$validate_only;
+        $this->serviceAccount = $account;
+        $this->validate_only = $validate_only;
         $this->client = $client;
     }
 
@@ -54,18 +53,27 @@ class Request implements JsonSerializable
         ];
     }
 
-    /**
-     * @param ServiceAccount $account
-     * @throws FcmError
-     * @throws FcmError|\GuzzleHttp\Exception\GuzzleException
-     */
-    public function send(ServiceAccount $account){
-        $payload = $this->jsonSerialize();
-        // Add OAuth 2.0 token to the request
-        $client = $account->authorize($this->client);
-        $apiUrl = $account->getFcmApiV1Url();
+    private function getPayload(Message $message){
+        return [
+            'validate_only' => $this->validate_only,
+            'message'       => $message->getPayload(),
+        ];
+    }
 
-        echo(json_encode($payload,JSON_PRETTY_PRINT));
+    /**
+     * @param Message $message
+     * @throws FcmError
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return string|null submitted message name
+     * @internal Only use Message submit
+     */
+    public function submit(Message $message){
+        $payload = $this->getPayload($message);
+        // Add OAuth 2.0 token to the request
+        $client = $this->serviceAccount->authorize($this->client);
+        // Get FCM v1 Api URL
+        $apiUrl = $this->serviceAccount->getFcmApiV1Url();
+
 
         try{
             $rq = $client->request('POST',$apiUrl,[
@@ -74,7 +82,12 @@ class Request implements JsonSerializable
 
             echo
                 "Result:\n status code:".$rq->getStatusCode()."\t".$rq->getReasonPhrase().
-                "\n ---- Headers: ----\n\t".implode("\n\t",$rq->getHeaders())."\n--body--\n".$rq->getBody();
+                "\n--body--\n".$rq->getBody();
+
+            $json = json_decode($rq->getBody(),true);
+
+            return ($json && isset($json['message']['name']))?$json['message']['name']:null;
+
         }catch(RequestException $e){
 
             $request = $e->getRequest();
