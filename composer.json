@@ -1,0 +1,21 @@
+{
+    "name": "plokko/php-fcm",
+    "description": "Firebase cloud messaging (http v1) Php implementation",
+    "require": {
+        "php": ">=5.6",
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "require-dev": {
+	},
+	
+    "autoload": {
+        "psr-4": {
+            "Plokko\\phpFCM\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Plokko\\phpFCM\\Tests\\": "tests/"
+        }
+    }
+}
