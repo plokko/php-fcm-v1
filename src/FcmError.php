@@ -1,13 +1,14 @@
 <?php
 namespace Plokko\PhpFcmV1;
-use Exception;
+
+use Error;
 
 /**
  * Class FcmError
  * @package Plokko\PhpFcmV1
  * @see https://firebase.google.com/docs/reference/fcm/rest/v1/FcmError
  */
-class FcmError extends Exception
+class FcmError extends Error
 {
     private static
         $error_code_enums = [
@@ -20,17 +21,21 @@ class FcmError extends Exception
             'UNAVAILABLE'       => 'The server is overloaded.',
             'INTERNAL'          => 'An unknown internal error occurred.',
         ];
-    /**
-     * FcmError constructor.
-     * @param $error_code string error_code@see https://firebase.google.com/docs/reference/fcm/rest/v1/ErrorCode
-     */
-    function __construct($error_code){
-       $message = array_key_exists($error_code,self::$error_code_enums)?self::$error_code_enums[$error_code]:'';
-        parent::__construct($message,$error_code);
+    private
+        $error_code;
+
+    function __construct($error_code,\Throwable $t=null){
+        parent::__construct($error_code,$t?$t->getCode():0,$t);
+        $this->error_code = $error_code;
     }
 
 
+    public function getDescription()
+    {
+        return array_key_exists($this->error_code,self::$error_code_enums)?self::$error_code_enums[$this->error_code]:'';
+    }
+
     public function __toString(){
-        return 'FcmError: '.$this->getCode();
+        return 'FcmError['.$this->getMessage().']: '.$this->getDescription();
     }
 }

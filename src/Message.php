@@ -8,6 +8,7 @@ use Plokko\PhpFcmV1\Message\Data;
 use Plokko\PhpFcmV1\Message\Notification;
 use Plokko\PhpFcmV1\Message\WebpushConfig;
 use Plokko\PhpFcmV1\Targets\Target;
+use UnexpectedValueException;
 
 /**
  * Class Message
@@ -76,7 +77,7 @@ class Message implements JsonSerializable {
     public function jsonSerialize()
     {
         if(!$this->target){
-            throw new \Exception('FCMMEssage target not specified!','TARGET_NOT_SPECIFIED');
+            throw new UnexpectedValueException('FCMMEssage target not specified!','TARGET_NOT_SPECIFIED');
         }
 
         $data = array_filter([

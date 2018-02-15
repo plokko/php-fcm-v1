@@ -21,7 +21,7 @@ abstract class Target implements JsonSerializable
     }
 
     public function jsonSerialize(){
-        return [ strtolower(static::class) => $this->value ];
+        return [ strtolower((new \ReflectionClass($this))->getShortName()) => $this->value ];
     }
 
 }
