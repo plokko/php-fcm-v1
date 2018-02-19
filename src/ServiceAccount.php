@@ -1,8 +1,11 @@
 <?php
 namespace Plokko\PhpFcmV1;
 
-use Google_Client;
+use Google\Auth\Credentials\ServiceAccountCredentials;
+use Google\Auth\Middleware\AuthTokenMiddleware;
+use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\HandlerStack;
 use InvalidArgumentException;
 use LogicException;
 use UnexpectedValueException;
@@ -11,16 +14,15 @@ class ServiceAccount
 {
     private
         $apiV1Url = 'https://fcm.googleapis.com/v1/{parent}/messages:send',
-        /**@var Google_Client**/
-        $gclient,
-        /**@var array*/
+        /**@var ServiceAccountCredentials **/
+        $credentials,
+        /**@var array */
         $authConfig;
 
 
     /**
      * ServiceAccount constructor.
      * @param string|array $authConfig
-     * @throws \Google_Exception
      */
     function __construct($authConfig)
     {
@@ -29,6 +31,7 @@ class ServiceAccount
                 throw new InvalidArgumentException('FCM auth config file not found');
             }
 
+
             $json = file_get_contents($authConfig);
 
             if (!$authConfig = json_decode($json, true)) {
@@ -36,15 +39,20 @@ class ServiceAccount
             }
         }
 
-        $this->authConfig = $authConfig;
-        $this->gclient = new Google_Client();
-        $this->gclient->setAuthConfig($authConfig);
-        $this->gclient->addScope('https://www.googleapis.com/auth/firebase.messaging');
-        //$this->gclient->addScope('https://www.googleapis.com/auth/cloud-platform');
+        $this->authConfig   = $authConfig;
+        $this->credentials  = new ServiceAccountCredentials('https://www.googleapis.com/auth/firebase.messaging',$this->authConfig);
+
     }
 
     function authorize(ClientInterface $request=null){
-         return $this->gclient->authorize($request);
+        $config = $request? $request->getConfig(): ['handler'=> HandlerStack::create(),];
+        $middleware  = new AuthTokenMiddleware($this->credentials);
+
+        $config['handler']->remove('google_auth');
+        $config['handler']->push($middleware);
+        $config['auth'] = 'google_auth';
+
+        return new Client($config);
     }
 
     /**

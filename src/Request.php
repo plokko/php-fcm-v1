@@ -74,10 +74,13 @@ class Request implements JsonSerializable
         // Get FCM v1 Api URL
         $apiUrl = $this->serviceAccount->getFcmApiV1Url();
 
-
+        $key = 'AAAA469wX50:APA91bG6Jpfuj2T3efqiCUA3xc5setHCixMwDkYRITq2VVEhb5j7m3tI83ZSk6OAC7glcNSI_qRFXLNoFRJekzLEYkP9Kt2tNkgMUZTUf0SlslHVDRyTZwJprFXBEsI6H9mLvxcnaWSk';
         try{
             $rq = $client->request('POST',$apiUrl,[
                 'json' => $payload,
+                'headers'=> [
+                    'Authentication' => http_build_query(['authentication_key'=>$key,])
+                ]
             ]);
 
             echo
@@ -89,8 +92,6 @@ class Request implements JsonSerializable
             return ($json && isset($json['message']['name']))?$json['message']['name']:null;
 
         }catch(RequestException $e){
-
-            $request = $e->getRequest();
             $response = $e->getResponse();
             $json = json_decode($response->getBody(),true);
 
