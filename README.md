@@ -1,6 +1,7 @@
 # php-fpm-v1
 FCM App server protocol v1 php implementation
 
+__NOTE: this project is now part of  [plokko/firebase-php](https://github.com/plokko/firebase-php) and may be deprecated__
 ## Installation:
 Install with composer via
 
